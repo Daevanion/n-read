@@ -377,15 +377,15 @@ export function SpareApp({
                       pressed ? TONE[tier].active : TONE[tier].idle,
                     )}
                   >
-                    <p className={cn("text-xs font-medium tracking-[0.16em] uppercase", TONE[tier].text)}>
+                    <span className={cn("block text-xs font-medium tracking-[0.16em] uppercase", TONE[tier].text)}>
                       {TIER_META[tier].label}
-                    </p>
-                    <p className="font-heading mt-2 text-3xl tracking-tight tabular-nums">
+                    </span>
+                    <span className="font-heading mt-2 block text-3xl tracking-tight tabular-nums">
                       {formatBytes(bytes)}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    </span>
+                    <span className="mt-1 block text-sm text-muted-foreground">
                       {formatCount(count)} {count === 1 ? "item" : "items"} · {TIER_META[tier].sentence}
-                    </p>
+                    </span>
                   </button>
                 );
               })}
@@ -690,7 +690,11 @@ export function SpareApp({
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="destructive" disabled={phrase !== "remove" || removing}>
+              <Button
+                type="submit"
+                disabled={phrase !== "remove" || removing}
+                className="bg-destructive text-white hover:bg-destructive/90"
+              >
                 {removing ? "Deleting…" : "Delete permanently"}
               </Button>
             </DialogFooter>
@@ -726,6 +730,7 @@ function EntryRow({
           checked={checked}
           onCheckedChange={(value) => onCheckedChange(value === true)}
           onClick={(event) => event.stopPropagation()}
+          onPointerDown={(event) => event.stopPropagation()}
           aria-label={`Select ${entry.name}`}
           className="mt-1"
         />
