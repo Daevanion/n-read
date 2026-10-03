@@ -196,10 +196,12 @@ export function SpareApp({
         setDialogError(data.failed[0]?.error ?? "Nothing was deleted.");
         return;
       }
+      const removedCount = data.removed.length;
+      const removedLabel = removedCount === 1 ? "item" : "items";
       const failed = data.failed.length;
       const message = failed
-        ? `Removed ${formatCount(data.removed.length)} items (${formatBytes(data.freedBytes)}). ${formatCount(failed)} could not be deleted.`
-        : `Removed ${formatCount(data.removed.length)} items and freed ${formatBytes(data.freedBytes)}.`;
+        ? `Removed ${formatCount(removedCount)} ${removedLabel} (${formatBytes(data.freedBytes)}). ${formatCount(failed)} could not be deleted.`
+        : `Removed ${formatCount(removedCount)} ${removedLabel} and freed ${formatBytes(data.freedBytes)}.`;
       setDialogOpen(false);
       setPhrase("");
       const ok = await runScan(scan.root);
