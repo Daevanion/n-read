@@ -24,8 +24,8 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Koma",
-    template: "%s · Koma",
+    default: "eronikki",
+    template: "%s · eronikki",
   },
   description:
     "Read doujinshi and manga from the nhentai API. Search, browse tags, and open a full-page reader.",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const jar = await cookies();
-  const ageOk = jar.get("koma_age")?.value === "1";
+  const ageOk = jar.get("eronikki_age")?.value === "1";
 
   return (
     <html
@@ -55,7 +55,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               >
                 nhentai API v2
               </a>
-              . Koma is unofficial. Adult works only.
+              . eronikki is unofficial. Adult works only.
             </footer>
           </Chrome>
         </AgeGate>

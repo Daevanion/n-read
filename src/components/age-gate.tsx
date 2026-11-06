@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const COOKIE = "koma_age=1; Max-Age=31536000; Path=/; SameSite=Lax";
+const COOKIE = "eronikki_age=1; Max-Age=31536000; Path=/; SameSite=Lax";
 
 export function AgeGate({
   initialOk,
@@ -23,7 +23,7 @@ export function AgeGate({
     return (
       <main className="flex min-h-dvh items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <p className="font-heading text-3xl italic">Koma</p>
+          <p className="font-heading text-3xl italic">eronikki</p>
           <p className="mt-4 text-muted-foreground">
             This reader is only for adults. Close the tab if you are under 18.
           </p>
@@ -38,11 +38,12 @@ export function AgeGate({
         <p className="text-xs font-medium tracking-[0.2em] text-primary uppercase">
           18+
         </p>
-        <h1 className="font-heading mt-3 text-3xl italic">Koma</h1>
+        <h1 className="font-heading mt-3 text-3xl italic">eronikki</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           A manga reader for galleries on nhentai. The catalog is adult. You
           must be 18 or older to open it. Galleries tagged as involving minors
-          are hidden here.
+          are hidden here, including lolicon, shotacon, kodomo, and the
+          related tags.
         </p>
         <label className="mt-6 flex cursor-pointer items-start gap-3 text-sm">
           <Checkbox

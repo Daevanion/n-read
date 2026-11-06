@@ -49,8 +49,8 @@ export default async function HomePage({
           <code className="rounded bg-muted px-1 py-0.5 text-foreground">
             language:english
           </code>
-          , then read in a full-page viewer. Galleries tagged as involving
-          minors are hidden.
+          , then read in a full-page viewer. Galleries tagged lolicon,
+          shotacon, kodomo, toddlercon, or the related tags are hidden.
         </p>
       </div>
 

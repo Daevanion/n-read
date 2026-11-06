@@ -15,7 +15,7 @@ import type {
 } from "@/lib/types";
 
 const API_BASE = "https://nhentai.net/api/v2";
-const USER_AGENT = "Koma/0.1 (manga reader; https://nhentai.net/api/v2/docs)";
+const USER_AGENT = "eronikki/0.1 (manga reader; https://nhentai.net/api/v2/docs)";
 
 function headers(): HeadersInit {
   const result: Record<string, string> = {
@@ -160,7 +160,7 @@ export const getGallery = cache(async function getGallery(
     { revalidate: 300 },
   );
   if (galleryIsBlocked(data)) {
-    throw new NhentaiError("This gallery is not available in Koma.", 404);
+    throw new NhentaiError("This gallery is not available in eronikki.", 404);
   }
   return {
     ...data,

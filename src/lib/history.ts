@@ -1,9 +1,9 @@
 import type { HistoryEntry } from "@/lib/types";
 
-export const HISTORY_KEY = "koma.history";
-export const READER_MODE_KEY = "koma.reader.mode";
-export const HISTORY_EVENT = "koma-history";
-export const READER_MODE_EVENT = "koma-reader-mode";
+export const HISTORY_KEY = "eronikki.history";
+export const READER_MODE_KEY = "eronikki.reader.mode";
+export const HISTORY_EVENT = "eronikki-history";
+export const READER_MODE_EVENT = "eronikki-reader-mode";
 const MAX_HISTORY = 24;
 const EMPTY_HISTORY: HistoryEntry[] = [];
 

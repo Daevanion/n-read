@@ -53,7 +53,7 @@ export default async function GalleryPage({
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         <ErrorState
           title="This gallery is not available"
-          body="It may have been removed, or Koma hides it because of its tags."
+          body="It may have been removed, or eronikki hides it because of its tags."
         />
       </main>
     );

@@ -1,8 +1,8 @@
-# Koma
+# eronikki
 
-Koma is a manga reader for the public [nhentai API v2](https://nhentai.net/api/v2/docs). It lists newest and popular galleries, searches with nhentai query syntax, opens a gallery page, and reads in a full-screen viewer.
+eronikki is a manga reader for the public [nhentai API v2](https://nhentai.net/api/v2/docs). It lists newest and popular galleries, searches with nhentai query syntax, opens a gallery page, and reads in a full-screen viewer.
 
-The catalog is adult. An 18+ gate sits in front of it. Galleries tagged lolicon, shotacon, toddlercon, or the low-count variants of those tags are hidden.
+The catalog is adult. An 18+ gate sits in front of it. Galleries tagged lolicon, shotacon, toddlercon, oppai loli, lolibaba, kodomo doushi, kodomo only, kindergarten uniform, age regression, or the low-count variants of those tags are hidden.
 
 ## Run it
 
@@ -17,7 +17,7 @@ Images are fetched through `/api/media` from nhentai CDN hosts only. Metadata co
 
 ## Optional API key
 
-Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `NHENTAI_API_KEY` in the environment. Without it, Koma uses the public anonymous API.
+Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `NHENTAI_API_KEY` in the environment. Without it, eronikki uses the public anonymous API.
 
 ## Tests
 

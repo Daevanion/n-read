@@ -5,13 +5,19 @@ import {
   galleryIsBlocked,
   listItemIsBlocked,
   rejectBlockedItems,
+  tagLooksBlocked,
   titleLooksBlocked,
 } from "@/lib/filter";
 import type { GalleryDetail, GalleryListItem } from "@/lib/types";
 
-test("blocks known lolicon and shotacon tag ids", () => {
+test("blocks known minor-related tag ids", () => {
   assert.equal(BLOCKED_TAG_IDS.has(19440), true);
   assert.equal(BLOCKED_TAG_IDS.has(32341), true);
+  assert.equal(BLOCKED_TAG_IDS.has(25663), true);
+  assert.equal(BLOCKED_TAG_IDS.has(152252), true);
+  assert.equal(BLOCKED_TAG_IDS.has(152505), true);
+  assert.equal(BLOCKED_TAG_IDS.has(80631), true);
+  assert.equal(BLOCKED_TAG_IDS.has(31986), true);
   assert.equal(
     listItemIsBlocked({
       id: 1,
@@ -30,6 +36,9 @@ test("blocks known lolicon and shotacon tag ids", () => {
 test("blocks titles that name disallowed tags", () => {
   assert.equal(titleLooksBlocked("[Group] Loli example"), true);
   assert.equal(titleLooksBlocked("A story about shotacon"), true);
+  assert.equal(titleLooksBlocked("Kodomo only"), true);
+  assert.equal(titleLooksBlocked("Oppai loli"), true);
+  assert.equal(titleLooksBlocked("Age regression"), true);
   assert.equal(titleLooksBlocked("Lolita fashion only"), false);
   assert.equal(titleLooksBlocked("Eat The Rich!"), false);
 });
@@ -72,4 +81,20 @@ test("blocks a gallery detail by tag id", () => {
     pages: [],
   };
   assert.equal(galleryIsBlocked(gallery), true);
+  assert.equal(
+    tagLooksBlocked({
+      id: 999999,
+      name: "kodomo only",
+      slug: "kodomo-only",
+    }),
+    true,
+  );
+  assert.equal(
+    tagLooksBlocked({
+      id: 12227,
+      name: "english",
+      slug: "english",
+    }),
+    false,
+  );
 });

@@ -12,7 +12,7 @@ export function SiteHeader() {
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <span className="h-6 w-1.5 rounded-full bg-primary" />
           <span className="font-heading text-xl italic tracking-tight">
-            Koma
+            eronikki
           </span>
         </Link>
         <div className="min-w-0 flex-1">
