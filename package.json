@@ -1,5 +1,5 @@
 {
-  "name": "spare",
+  "name": "koma",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 43123",
     "lint": "eslint",
-    "test": "tsx --test src/lib/classify.test.ts src/lib/scan.integration.test.ts"
+    "test": "tsx --test src/lib/filter.test.ts src/lib/media.test.ts src/lib/query.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

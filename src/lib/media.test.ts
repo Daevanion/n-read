@@ -1,0 +1,48 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import {
+  isAllowedCdnOrigin,
+  mediaProxySrc,
+  parseMediaPath,
+  pickServer,
+} from "@/lib/media";
+
+test("accepts gallery media paths and rejects anything else", () => {
+  assert.deepEqual(parseMediaPath("galleries/9/1.jpg"), {
+    mediaId: "9",
+    file: "1.jpg",
+    path: "galleries/9/1.jpg",
+  });
+  assert.deepEqual(parseMediaPath("/galleries/4300532/thumb.webp"), {
+    mediaId: "4300532",
+    file: "thumb.webp",
+    path: "galleries/4300532/thumb.webp",
+  });
+  assert.equal(parseMediaPath("galleries/9/../secret.jpg"), null);
+  assert.equal(parseMediaPath("https://evil.example/x"), null);
+  assert.equal(parseMediaPath("galleries/abc/1.jpg"), null);
+  assert.equal(parseMediaPath(""), null);
+});
+
+test("builds a same-origin proxy URL", () => {
+  assert.equal(
+    mediaProxySrc("t", "galleries/9/thumb.jpg"),
+    "/api/media/t/galleries/9/thumb.jpg",
+  );
+  assert.equal(mediaProxySrc("i", "../etc/passwd"), "");
+});
+
+test("picks a stable CDN host from the media id", () => {
+  const servers = [
+    "https://i1.nhentai.net",
+    "https://i2.nhentai.net",
+    "https://i3.nhentai.net",
+    "https://i4.nhentai.net",
+  ];
+  const a = pickServer(servers, "9");
+  const b = pickServer(servers, "9");
+  assert.equal(a, b);
+  assert.equal(servers.includes(a), true);
+  assert.equal(isAllowedCdnOrigin(a, "i"), true);
+  assert.equal(isAllowedCdnOrigin("https://evil.example", "i"), false);
+});

@@ -1,66 +1,88 @@
-import type { CategoryId, Tier } from "@/lib/classify";
-
-export type ScanEntry = {
-  id: string;
-  name: string;
-  relativePath: string;
-  displayPath: string;
-  bytes: number;
-  mtimeMs: number;
-  fileCount: number;
-  kind: "file" | "dir";
-  category: CategoryId;
-  tier: Tier;
-  reason: string;
-  duplicateOf?: string;
+export type GalleryTitle = {
+  english: string;
+  japanese: string | null;
+  pretty: string;
 };
 
-export type CategorySummary = {
-  id: CategoryId;
-  bytes: number;
-  count: number;
-};
-
-export type ScanResult = {
-  scanId: string;
-  root: string;
-  sample: boolean;
-  includesApp: boolean;
-  scannedAt: string;
-  elapsedMs: number;
-  truncated: boolean;
-  visited: number;
-  skipped: number;
-  omitted: number;
-  totals: {
-    bytes: number;
-    count: number;
-    optionalBytes: number;
-    reviewBytes: number;
-    keepBytes: number;
-    optionalCount: number;
-    reviewCount: number;
-    keepCount: number;
-  };
-  categories: CategorySummary[];
-  entries: ScanEntry[];
-};
-
-export type Suggestion = {
-  id: string;
-  label: string;
+export type CoverInfo = {
   path: string;
-  detail: string;
+  width: number;
+  height: number;
 };
 
-export type RemoveFailure = {
-  id: string;
-  path?: string;
-  error: string;
+export type PageInfo = {
+  number: number;
+  path: string;
+  width: number;
+  height: number;
+  thumbnail: string;
+  thumbnail_width: number;
+  thumbnail_height: number;
 };
 
-export type RemoveResult = {
-  removed: { id: string; path: string; bytes: number }[];
-  failed: RemoveFailure[];
-  freedBytes: number;
+export type Tag = {
+  id: number;
+  type: string;
+  name: string;
+  slug: string;
+  url: string;
+  count: number;
+  description?: string | null;
+};
+
+export type GalleryListItem = {
+  id: number;
+  media_id: string;
+  english_title: string;
+  japanese_title: string | null;
+  thumbnail: string;
+  thumbnail_width: number;
+  thumbnail_height: number;
+  num_pages?: number;
+  num_favorites?: number;
+  tag_ids?: number[];
+  blacklisted?: boolean;
+};
+
+export type GalleryDetail = {
+  id: number;
+  media_id: string;
+  title: GalleryTitle;
+  cover: CoverInfo;
+  thumbnail: CoverInfo;
+  scanlator?: string;
+  upload_date: number;
+  tags: Tag[];
+  num_pages: number;
+  num_favorites: number;
+  pages: PageInfo[];
+  related?: GalleryListItem[] | null;
+};
+
+export type PaginatedGalleries = {
+  result: GalleryListItem[];
+  num_pages: number;
+  per_page?: number;
+  total?: number | null;
+};
+
+export type CdnConfig = {
+  image_servers: string[];
+  thumb_servers: string[];
+};
+
+export type SortOption =
+  | "date"
+  | "popular"
+  | "popular-today"
+  | "popular-week"
+  | "popular-month";
+
+export type HistoryEntry = {
+  id: number;
+  title: string;
+  thumbnail: string;
+  page: number;
+  pages: number;
+  readAt: number;
 };

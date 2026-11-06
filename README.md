@@ -1,12 +1,8 @@
-# Spare
+# Koma
 
-Spare scans a folder on your computer and sorts it into three piles:
+Koma is a manga reader for the public [nhentai API v2](https://nhentai.net/api/v2/docs). It lists newest and popular galleries, searches with nhentai query syntax, opens a gallery page, and reads in a full-screen viewer.
 
-- **Optional** — caches, reinstallable dependencies, build output, logs, junk files, and extra copies of a file. These are the ones that are usually safe to remove.
-- **Review** — installers, archives, large media, and downloads that have been sitting for 90 days or more.
-- **Keep** — documents, source code, version history, and anything Spare does not recognize.
-
-Nothing is deleted until you select it and type `remove`. Files labeled Keep cannot be deleted from Spare.
+The catalog is adult. An 18+ gate sits in front of it. Galleries tagged lolicon, shotacon, toddlercon, or the low-count variants of those tags are hidden.
 
 ## Run it
 
@@ -15,29 +11,13 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:43123](http://127.0.0.1:43123). The first view is a sample closet of placeholder files, so you can practice before pointing Spare at a real folder. Use Home, Downloads, or Desktop, or paste any folder path. System folders such as `/usr` and `/etc` are refused.
+Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Confirm you are 18, then browse. Search accepts the same syntax as nhentai (`language:english`, `artist:name`, `pages:>20`, `-tag:name`). Open a cover to read. Arrow keys, `A`/`D`, and space turn pages. `M` switches between single page and long strip. Progress stays in this browser.
 
-Restore the sample with the button on the page after you delete from it.
+Images are fetched through `/api/media` from nhentai CDN hosts only. Metadata comes from `https://nhentai.net/api/v2`. No account is required.
 
-## How a label is chosen
+## Optional API key
 
-Optional:
-
-- Cache directories such as `.cache`, `__pycache__`, and `Caches` inside `Library` or `AppData`
-- `node_modules`, virtual environments, and `site-packages`
-- `.next`, and `dist` / `build` / `coverage` / `out` only when a project file sits beside them
-- `target` only beside Cargo or Maven/Gradle files
-- Logs, `.tmp` / `.bak` files, and `.DS_Store`
-- A later identical copy of a file (the older copy stays)
-
-Review:
-
-- Installers (`.dmg`, `.exe`, `.msi`, `.pkg`, and similar)
-- Archives and disk images
-- Video at least 50 MB, audio at least 30 MB, images at least 25 MB
-- Other files in Downloads that have not been touched for 90 days
-
-A folder named `build` or `Caches` in your documents is left alone. Unrecognized files stay in Keep.
+Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `NHENTAI_API_KEY` in the environment. Without it, Koma uses the public anonymous API.
 
 ## Tests
 
