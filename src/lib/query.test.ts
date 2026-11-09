@@ -17,7 +17,7 @@ test("parses paging, sort, and query bounds", () => {
   assert.equal(parseSort("popular-week"), "popular-week");
   assert.equal(parseSort("newest"), "date");
   assert.equal(parseQuery("  language:english  "), "language:english");
-  assert.equal(parseQuery("x".repeat(500)).length, 200);
+  assert.equal(parseQuery("x".repeat(500)).length, 400);
 });
 
 test("only accepts numeric gallery ids in range", () => {

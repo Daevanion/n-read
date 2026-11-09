@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EmptyState, ErrorState } from "@/components/empty-state";
 import { FilterBar } from "@/components/filter-bar";
@@ -9,8 +10,10 @@ import {
   isTagType,
   parsePage,
   parseSort,
+  searchHref,
   tagHref,
 } from "@/lib/query";
+import { formatClause } from "@/lib/tag-query";
 import type { PaginatedGalleries } from "@/lib/types";
 import type { Metadata } from "next";
 
@@ -69,6 +72,17 @@ export default async function TagPage({
             {data.total.toLocaleString()} galleries
           </p>
         ) : null}
+        <p className="mt-3">
+          <Link
+            href={searchHref({
+              q: formatClause({ type, value: slug, mode: "include" }),
+              sort,
+            })}
+            className="text-sm text-primary underline-offset-2 hover:underline"
+          >
+            Combine this tag with others
+          </Link>
+        </p>
       </div>
       <FilterBar
         query=""

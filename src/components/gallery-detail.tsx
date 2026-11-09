@@ -5,6 +5,8 @@ import { ReadButton } from "@/components/read-button";
 import { Badge } from "@/components/ui/badge";
 import { formatCount, formatPages, formatUploaded } from "@/lib/format";
 import { mediaProxySrc } from "@/lib/media";
+import { searchHref } from "@/lib/query";
+import { formatClause } from "@/lib/tag-query";
 import type { GalleryDetail as Gallery, Tag } from "@/lib/types";
 
 const TAG_ORDER = [
@@ -95,7 +97,17 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
                     <Badge
                       key={tag.id}
                       variant="outline"
-                      render={<Link href={`/tag/${tag.type}/${tag.slug}`} />}
+                      render={
+                        <Link
+                          href={searchHref({
+                            q: formatClause({
+                              type: tag.type,
+                              value: tag.slug,
+                              mode: "include",
+                            }),
+                          })}
+                        />
+                      }
                     >
                       {tag.name}
                       <span className="text-muted-foreground">

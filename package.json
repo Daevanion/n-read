@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 43123",
     "lint": "eslint",
-    "test": "tsx --test src/lib/filter.test.ts src/lib/media.test.ts src/lib/query.test.ts"
+    "test": "tsx --test src/lib/filter.test.ts src/lib/media.test.ts src/lib/query.test.ts src/lib/tag-query.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

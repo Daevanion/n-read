@@ -39,7 +39,7 @@ export function parseSort(
 }
 
 export function parseQuery(value: string | string[] | undefined): string {
-  return (firstParam(value) ?? "").trim().slice(0, 200);
+  return (firstParam(value) ?? "").trim().slice(0, 400);
 }
 
 export function parseGalleryId(value: string | undefined): number | null {

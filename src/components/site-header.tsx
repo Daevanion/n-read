@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { SearchForm } from "@/components/search-form";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ShuffleIcon } from "lucide-react";
+import { ShuffleIcon, TagsIcon } from "lucide-react";
 
 export function SiteHeader() {
   return (
@@ -20,6 +20,13 @@ export function SiteHeader() {
             <SearchForm />
           </Suspense>
         </div>
+        <Link
+          href="/search"
+          className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+        >
+          <TagsIcon data-icon="inline-start" />
+          <span className="hidden sm:inline">Tags</span>
+        </Link>
         <Link
           href="/random"
           className={cn(buttonVariants({ variant: "outline", size: "sm" }))}

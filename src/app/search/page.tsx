@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { EmptyState, ErrorState } from "@/components/empty-state";
 import { FilterBar } from "@/components/filter-bar";
 import { GalleryGrid } from "@/components/gallery-grid";
 import { PaginationBar } from "@/components/pagination-bar";
+import { TagTogglePanel } from "@/components/tag-toggle";
 import { errorMessage } from "@/lib/errors";
 import { searchGalleries } from "@/lib/nhentai";
 import { parsePage, parseQuery, parseSort, searchHref } from "@/lib/query";
@@ -29,21 +31,25 @@ export default async function SearchPage({
   const sort = parseSort(params.sort);
   const page = parsePage(params.page);
 
+  const panel = (
+    <Suspense fallback={<div className="h-40 rounded-2xl bg-card" />}>
+      <TagTogglePanel />
+    </Suspense>
+  );
+
   if (!q) {
     return (
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
-        <h1 className="font-heading text-4xl italic">Search</h1>
-        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Try a title, or nhentai syntax:{" "}
-          <code className="rounded bg-muted px-1 py-0.5">artist:name</code>,{" "}
-          <code className="rounded bg-muted px-1 py-0.5">language:english</code>
-          ,{" "}
-          <code className="rounded bg-muted px-1 py-0.5">pages:&gt;20</code>,{" "}
-          <code className="rounded bg-muted px-1 py-0.5">-tag:name</code>.
-        </p>
-        <div className="mt-6">
-          <FilterBar query="" sort={sort} />
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6">
+        <div>
+          <h1 className="font-heading text-4xl italic">Search</h1>
+          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+            Turn tags on or off, or type a title. You can still use nhentai
+            syntax such as{" "}
+            <code className="rounded bg-muted px-1 py-0.5">pages:&gt;20</code>.
+          </p>
         </div>
+        {panel}
+        <FilterBar query="" sort={sort} />
       </main>
     );
   }
@@ -67,6 +73,7 @@ export default async function SearchPage({
           </p>
         ) : null}
       </div>
+      {panel}
       <FilterBar query={q} sort={sort} />
       {error ? (
         <ErrorState title="Search failed" body={error} />

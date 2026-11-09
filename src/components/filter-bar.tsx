@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LANGUAGE_FILTERS, SORT_OPTIONS, searchHref } from "@/lib/query";
+import { activeLanguage, withLanguage } from "@/lib/tag-query";
 import { cn } from "@/lib/utils";
 import type { SortOption } from "@/lib/types";
 
@@ -33,9 +34,13 @@ export function FilterBar({
       {showLanguages ? (
         <div className="flex flex-wrap gap-1.5">
           {LANGUAGE_FILTERS.map((lang) => {
-            const active =
-              query === lang.query || (lang.query === "" && query === "");
-            const href = lang.query ? searchHref({ q: lang.query, sort }) : "/";
+            const value = lang.query.startsWith("language:")
+              ? lang.query.slice("language:".length)
+              : "";
+            const current = activeLanguage(query);
+            const active = value === "" ? current === "" : current === value;
+            const nextQuery = withLanguage(query, value || null);
+            const href = nextQuery ? searchHref({ q: nextQuery, sort }) : "/";
             return (
               <Link key={lang.label} href={href} className={chipClass(active)}>
                 {lang.label}

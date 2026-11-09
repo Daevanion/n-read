@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { ContinueReading } from "@/components/continue-reading";
 import { EmptyState, ErrorState } from "@/components/empty-state";
 import { FilterBar } from "@/components/filter-bar";
 import { GalleryGrid } from "@/components/gallery-grid";
 import { PaginationBar } from "@/components/pagination-bar";
 import { PopularRow } from "@/components/popular-row";
+import { TagTogglePanel } from "@/components/tag-toggle";
 import { errorMessage } from "@/lib/errors";
 import { getPopular, listGalleries } from "@/lib/nhentai";
 import { parsePage } from "@/lib/query";
@@ -55,6 +57,9 @@ export default async function HomePage({
       </div>
 
       <FilterBar query="" sort="date" showSort={false} />
+      <Suspense fallback={<div className="h-40 rounded-2xl bg-card" />}>
+        <TagTogglePanel />
+      </Suspense>
       {randomFailed ? (
         <p className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
           Random did not land on an available gallery. Try the button again.

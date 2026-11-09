@@ -3,6 +3,7 @@ import { NhentaiError } from "@/lib/errors";
 import {
   galleryIsBlocked,
   rejectBlockedItems,
+  tagLooksBlocked,
 } from "@/lib/filter";
 import { DEFAULT_CDN } from "@/lib/media";
 import type {
@@ -178,16 +179,34 @@ export const getTagBySlug = cache(async function getTagBySlug(
   );
 });
 
+export async function listTagsByType(
+  type: string,
+  page = 1,
+  perPage = 36,
+): Promise<Tag[]> {
+  const params = new URLSearchParams({
+    sort: "popular",
+    page: String(page),
+    per_page: String(perPage),
+  });
+  const data = await nhentaiFetch<{ result?: Tag[] }>(
+    `/tags/${encodeURIComponent(type)}?${params}`,
+    { revalidate: 3600 },
+  );
+  return (data.result ?? []).filter((tag) => !tagLooksBlocked(tag)).slice(0, perPage);
+}
+
 export async function searchTags(query: string, limit = 8): Promise<Tag[]> {
   const q = query.trim();
   if (q.length < 2) return [];
   const data = await nhentaiFetch<Tag[]>("/tags/search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: q.slice(0, 80), limit }),
+    body: JSON.stringify({ query: q.slice(0, 80), limit: Math.min(limit + 8, 50) }),
     revalidate: 0,
   });
-  return Array.isArray(data) ? data.slice(0, limit) : [];
+  if (!Array.isArray(data)) return [];
+  return data.filter((tag) => !tagLooksBlocked(tag)).slice(0, limit);
 }
 
 export { API_BASE, USER_AGENT };

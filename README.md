@@ -11,13 +11,23 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Confirm you are 18, then browse. Search accepts the same syntax as nhentai (`language:english`, `artist:name`, `pages:>20`, `-tag:name`). Open a cover to read. Arrow keys, `A`/`D`, and space turn pages. `M` switches between single page and long strip. Progress stays in this browser.
+Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Confirm you are 18, then browse. The tag list on the home page and on Search lets you require a tag, exclude it with a second click, and clear it with a third. You can also look up a tag, artist, character, parody, or group and add it. Search still accepts nhentai syntax (`language:english`, `artist:name`, `pages:>20`, `-tag:name`). Open a cover to read. Arrow keys, `A`/`D`, and space turn pages. `M` switches between single page and long strip. Progress stays in this browser.
 
 Images are fetched through `/api/media` from nhentai CDN hosts only. Metadata comes from `https://nhentai.net/api/v2`. No account is required.
 
 ## Optional API key
 
 Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `NHENTAI_API_KEY` in the environment. Without it, eronikki uses the public anonymous API.
+
+## Host on Vercel
+
+This is a Next.js app. From the project root, with the Vercel CLI logged in:
+
+```bash
+npx vercel deploy --prod --yes
+```
+
+Set `NHENTAI_API_KEY` in the Vercel project only if you have a key. The public API works without it.
 
 ## Tests
 
