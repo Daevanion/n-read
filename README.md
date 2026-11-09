@@ -19,17 +19,15 @@ Images are fetched through `/api/media` from nhentai CDN hosts only. Metadata co
 
 Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `NHENTAI_API_KEY` in the environment. Without it, eronikki uses the public anonymous API.
 
-## Host on Vercel
+## Host it
 
-The production site is [eronikki.vercel.app](https://eronikki.vercel.app).
+Vercel does not allow this kind of site. Fly.io’s terms ban pornographic content on their machines, and Railway bans sexually explicit content. [Render](https://render.com) does allow legal adult sites that stay inside its acceptable-use rules, and it can run this Next.js server.
 
-To deploy again from this folder after `npx vercel login`:
+Push this repo to GitHub or GitLab, then in the Render dashboard choose **New** → **Blueprint** and point it at the repo. `render.yaml` builds the app, starts it on Render’s `PORT`, and checks `/api/health`. The free instance sleeps after a quiet stretch; the next visit wakes it. A larger plan in that file (`0.5c-512mb`) keeps it awake.
 
-```bash
-npx vercel deploy --prod --yes
-```
+`NHENTAI_API_KEY` is optional. Add it in the Render service’s environment only if you have a key. The public API works without it.
 
-Set `NHENTAI_API_KEY` in the Vercel project only if you have a key. The public API works without it.
+DigitalOcean also allows lawful adult sites if you later want a droplet instead of Render.
 
 ## Tests
 
