@@ -21,7 +21,9 @@ Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `
 
 ## Host on Vercel
 
-This is a Next.js app. From the project root, with the Vercel CLI logged in:
+The production site is [eronikki.vercel.app](https://eronikki.vercel.app).
+
+To deploy again from this folder after `npx vercel login`:
 
 ```bash
 npx vercel deploy --prod --yes
