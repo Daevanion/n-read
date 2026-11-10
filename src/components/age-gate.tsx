@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { LogoMark } from "@/components/logo-mark";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -23,7 +24,8 @@ export function AgeGate({
     return (
       <main className="flex min-h-dvh items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <p className="font-heading text-3xl italic">eronikki</p>
+          <LogoMark className="mx-auto size-14" />
+          <p className="font-heading mt-4 text-3xl italic">eronikki</p>
           <p className="mt-4 text-muted-foreground">
             This reader is only for adults. Close the tab if you are under 18.
           </p>
@@ -35,7 +37,8 @@ export function AgeGate({
   return (
     <main className="flex min-h-dvh items-center justify-center px-6 py-12">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 sm:p-8">
-        <p className="text-xs font-medium tracking-[0.2em] text-primary uppercase">
+        <LogoMark className="size-14" />
+        <p className="mt-4 text-xs font-medium tracking-[0.2em] text-primary uppercase">
           18+
         </p>
         <h1 className="font-heading mt-3 text-3xl italic">eronikki</h1>

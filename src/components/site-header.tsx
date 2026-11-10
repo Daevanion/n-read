@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { LogoMark } from "@/components/logo-mark";
 import { SearchForm } from "@/components/search-form";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -9,9 +10,13 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <span className="h-6 w-1.5 rounded-full bg-primary" />
-          <span className="font-heading text-xl italic tracking-tight">
+        <Link
+          href="/"
+          aria-label="eronikki"
+          className="flex shrink-0 items-center gap-2"
+        >
+          <LogoMark />
+          <span className="font-heading hidden text-xl italic tracking-tight sm:inline">
             eronikki
           </span>
         </Link>
