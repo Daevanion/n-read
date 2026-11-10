@@ -4,7 +4,7 @@ import { GalleryGrid } from "@/components/gallery-grid";
 import { ReadButton } from "@/components/read-button";
 import { Badge } from "@/components/ui/badge";
 import { formatCount, formatPages, formatUploaded } from "@/lib/format";
-import { mediaProxySrc } from "@/lib/media";
+import { mediaSrc } from "@/lib/media";
 import { searchHref } from "@/lib/query";
 import { formatClause } from "@/lib/tag-query";
 import type { GalleryDetail as Gallery, Tag } from "@/lib/types";
@@ -38,7 +38,7 @@ function groupTags(tags: Tag[]): { type: string; tags: Tag[] }[] {
 
 export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
   const grouped = groupTags(gallery.tags ?? []);
-  const cover = mediaProxySrc("i", gallery.cover.path);
+  const cover = mediaSrc("i", gallery.cover.path);
 
   return (
     <article className="space-y-10">
@@ -133,7 +133,7 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
                 className="overflow-hidden rounded-md ring-1 ring-foreground/8 hover:ring-primary"
               >
                 <CoverImage
-                  src={mediaProxySrc("t", page.thumbnail)}
+                  src={mediaSrc("t", page.thumbnail)}
                   alt={`Page ${page.number}`}
                   width={page.thumbnail_width}
                   height={page.thumbnail_height}

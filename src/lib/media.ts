@@ -40,10 +40,11 @@ export function pickServer(servers: string[], mediaId: string): string {
   return origin.replace(/\/+$/, "");
 }
 
-export function mediaProxySrc(kind: MediaKind, path: string): string {
+export function mediaSrc(kind: MediaKind, path: string): string {
   const parsed = parseMediaPath(path);
   if (!parsed) return "";
-  return `/api/media/${kind}/${parsed.path}`;
+  const servers = kind === "t" ? DEFAULT_CDN.thumb_servers : DEFAULT_CDN.image_servers;
+  return `${pickServer(servers, parsed.mediaId)}/${parsed.path}`;
 }
 
 export function isAllowedCdnOrigin(
@@ -55,5 +56,3 @@ export function isAllowedCdnOrigin(
   const normalized = origin.replace(/\/+$/, "");
   return allowed.some((server) => server.replace(/\/+$/, "") === normalized);
 }
-
-export const MAX_MEDIA_BYTES = 20 * 1024 * 1024;

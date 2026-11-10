@@ -16,7 +16,7 @@ import {
   saveReaderMode,
   subscribeReaderMode,
 } from "@/lib/history";
-import { mediaProxySrc } from "@/lib/media";
+import { mediaSrc } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { GalleryDetail, PageInfo } from "@/lib/types";
 import {
@@ -110,7 +110,7 @@ export function Reader({
     () =>
       pages
         .slice(page, page + 2)
-        .map((item) => mediaProxySrc("i", item.path))
+        .map((item) => mediaSrc("i", item.path))
         .filter(Boolean),
     [pages, page],
   );
@@ -165,7 +165,7 @@ export function Reader({
             <img
               key={item.number}
               id={`p-${item.number}`}
-              src={mediaProxySrc("i", item.path)}
+              src={mediaSrc("i", item.path)}
               alt={`Page ${item.number}`}
               width={item.width}
               height={item.height}
@@ -190,7 +190,7 @@ export function Reader({
           {current ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={mediaProxySrc("i", current.path)}
+              src={mediaSrc("i", current.path)}
               alt={`Page ${current.number}`}
               width={current.width}
               height={current.height}
@@ -212,7 +212,7 @@ export function Reader({
           {nextPage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={mediaProxySrc("i", nextPage.path)}
+              src={mediaSrc("i", nextPage.path)}
               alt=""
               className="hidden"
             />

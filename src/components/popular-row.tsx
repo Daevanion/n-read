@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CoverImage } from "@/components/cover-image";
 import { formatCount } from "@/lib/format";
-import { mediaProxySrc } from "@/lib/media";
+import { mediaSrc } from "@/lib/media";
 import type { GalleryListItem } from "@/lib/types";
 
 export function PopularRow({ items }: { items: GalleryListItem[] }) {
@@ -14,7 +14,7 @@ export function PopularRow({ items }: { items: GalleryListItem[] }) {
         {items.slice(0, 5).map((item) => (
           <Link key={item.id} href={`/g/${item.id}`} className="w-40 shrink-0 sm:w-auto">
             <CoverImage
-              src={mediaProxySrc("t", item.thumbnail)}
+              src={mediaSrc("t", item.thumbnail)}
               alt={item.english_title}
               width={item.thumbnail_width}
               height={item.thumbnail_height}

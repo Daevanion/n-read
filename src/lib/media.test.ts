@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   isAllowedCdnOrigin,
-  mediaProxySrc,
+  mediaSrc,
   parseMediaPath,
   pickServer,
 } from "@/lib/media";
@@ -24,12 +24,15 @@ test("accepts gallery media paths and rejects anything else", () => {
   assert.equal(parseMediaPath(""), null);
 });
 
-test("builds a same-origin proxy URL", () => {
-  assert.equal(
-    mediaProxySrc("t", "galleries/9/thumb.jpg"),
-    "/api/media/t/galleries/9/thumb.jpg",
+test("builds a direct CDN URL and rejects unsafe paths", () => {
+  const thumb = mediaSrc("t", "galleries/9/thumb.jpg");
+  assert.match(thumb, /^https:\/\/t[1-4]\.nhentai\.net\/galleries\/9\/thumb\.jpg$/);
+  assert.equal(mediaSrc("t", "galleries/9/thumb.jpg"), thumb);
+  assert.match(
+    mediaSrc("i", "galleries/4304843/1.webp"),
+    /^https:\/\/i[1-4]\.nhentai\.net\/galleries\/4304843\/1\.webp$/,
   );
-  assert.equal(mediaProxySrc("i", "../etc/passwd"), "");
+  assert.equal(mediaSrc("i", "../etc/passwd"), "");
 });
 
 test("picks a stable CDN host from the media id", () => {

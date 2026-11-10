@@ -8,7 +8,7 @@ import {
   loadHistory,
   subscribeHistory,
 } from "@/lib/history";
-import { mediaProxySrc } from "@/lib/media";
+import { mediaSrc } from "@/lib/media";
 
 export function ContinueReading() {
   const entries = useSyncExternalStore(
@@ -33,7 +33,7 @@ export function ContinueReading() {
             className="w-28 shrink-0 sm:w-32"
           >
             <CoverImage
-              src={mediaProxySrc("t", entry.thumbnail)}
+              src={mediaSrc("t", entry.thumbnail)}
               alt={entry.title}
               className="aspect-[5/7] w-full rounded-lg ring-1 ring-foreground/8"
             />

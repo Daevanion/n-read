@@ -13,7 +13,7 @@ npm run dev
 
 Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Confirm you are 18, then browse. The tag list on the home page and on Search lets you require a tag, exclude it with a second click, and clear it with a third. You can also look up a tag, artist, character, parody, or group and add it. Search still accepts nhentai syntax (`language:english`, `artist:name`, `pages:>20`, `-tag:name`). Open a cover to read. Arrow keys, `A`/`D`, and space turn pages. `M` switches between single page and long strip. Progress stays in this browser.
 
-Images are fetched through `/api/media` from nhentai CDN hosts only. Metadata comes from `https://nhentai.net/api/v2`. No account is required.
+Covers and pages load in the browser from nhentai’s image CDN. Metadata comes from `https://nhentai.net/api/v2`, and those calls are paced so the shared address stays under the anonymous cap. No account is required.
 
 ## Optional API key
 

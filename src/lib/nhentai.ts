@@ -6,6 +6,12 @@ import {
   tagLooksBlocked,
 } from "@/lib/filter";
 import { DEFAULT_CDN } from "@/lib/media";
+import {
+  ANON_PER_MINUTE,
+  MAX_PACE_WAIT_MS,
+  createPacer,
+  endpointBucket,
+} from "@/lib/pace";
 import type {
   CdnConfig,
   GalleryDetail,
@@ -28,10 +34,49 @@ function headers(): HeadersInit {
   return result;
 }
 
+const pacer = createPacer();
+const inflight = new Map<string, Promise<unknown>>();
+
+function perMinuteFor(bucket: string): number {
+  const base = ANON_PER_MINUTE[bucket] ?? ANON_PER_MINUTE.other;
+  return process.env.NHENTAI_API_KEY?.trim() ? base * 3 : base;
+}
+
 async function nhentaiFetch<T>(
   path: string,
   init: RequestInit & { revalidate?: number } = {},
 ): Promise<T> {
+  const method = (init.method ?? "GET").toUpperCase();
+  const flightKey = `${method} ${path} ${typeof init.body === "string" ? init.body : ""}`;
+  const pending = inflight.get(flightKey);
+  if (pending) return pending as Promise<T>;
+
+  const run = Promise.resolve().then(() => loadFromNhentai<T>(path, init));
+  inflight.set(flightKey, run);
+  try {
+    return await run;
+  } finally {
+    if (inflight.get(flightKey) === run) inflight.delete(flightKey);
+  }
+}
+
+async function loadFromNhentai<T>(
+  path: string,
+  init: RequestInit & { revalidate?: number },
+): Promise<T> {
+  const method = (init.method ?? "GET").toUpperCase();
+  const bucket = endpointBucket(path, method);
+  const wait = pacer.reserve(bucket, perMinuteFor(bucket));
+  if (wait > MAX_PACE_WAIT_MS) {
+    throw new NhentaiError(
+      "nhentai is rate-limiting this network. Wait a minute, or add an API key for a higher cap.",
+      429,
+    );
+  }
+  if (wait > 0) {
+    await new Promise((resolve) => setTimeout(resolve, wait));
+  }
+
   const { revalidate = 60, ...rest } = init;
   const url = `${API_BASE}${path}`;
   let response: Response;

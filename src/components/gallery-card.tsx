@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CoverImage } from "@/components/cover-image";
 import { formatCount, formatPages } from "@/lib/format";
-import { mediaProxySrc } from "@/lib/media";
+import { mediaSrc } from "@/lib/media";
 import type { GalleryListItem } from "@/lib/types";
 
 export function GalleryCard({
@@ -11,7 +11,7 @@ export function GalleryCard({
   item: GalleryListItem;
   priority?: boolean;
 }) {
-  const src = mediaProxySrc("t", item.thumbnail);
+  const src = mediaSrc("t", item.thumbnail);
   const pages = item.num_pages ?? 0;
   const favs = item.num_favorites ?? 0;
 
