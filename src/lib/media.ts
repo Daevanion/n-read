@@ -40,7 +40,43 @@ export function pickServer(servers: string[], mediaId: string): string {
   return origin.replace(/\/+$/, "");
 }
 
+const HITOMI_HOST_RE = /^[a-z0-9-]+\.gold-usergeneratedcontent\.net$/;
+
+export function hitomiPublicSrc(path: string): string | null {
+  if (path.startsWith("/api/hitomi-image/")) return path;
+  if (!/^https?:\/\//.test(path)) return null;
+  let url: URL;
+  try {
+    url = new URL(path);
+  } catch {
+    return "";
+  }
+  if (!HITOMI_HOST_RE.test(url.hostname)) return null;
+  if (!url.pathname.startsWith("/") || url.pathname.includes("..")) return "";
+  const suffix = `${url.hostname}${url.pathname}`;
+  const base = process.env.NEXT_PUBLIC_HITOMI_IMAGE_BASE?.replace(/\/+$/, "");
+  return base ? `${base}/${suffix}` : `/api/hitomi-image/${suffix}`;
+}
+
 export function mediaSrc(kind: MediaKind, path: string): string {
+  if (!path) return "";
+  const hitomi = hitomiPublicSrc(path);
+  if (hitomi !== null) return hitomi;
+  if (/^https?:\/\//.test(path)) {
+    try {
+      const url = new URL(path);
+      if (
+        /^[it][1-4]\.nhentai\.net$/.test(url.hostname) &&
+        url.pathname.startsWith("/galleries/") &&
+        !url.pathname.includes("..")
+      ) {
+        return url.toString();
+      }
+    } catch {
+      return "";
+    }
+    return "";
+  }
   const parsed = parseMediaPath(path);
   if (!parsed) return "";
   const servers = kind === "t" ? DEFAULT_CDN.thumb_servers : DEFAULT_CDN.image_servers;

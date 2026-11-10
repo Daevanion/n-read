@@ -4,12 +4,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { searchHref } from "@/lib/query";
+import { useCatalogSource } from "@/components/source-switch";
 import type { Tag } from "@/lib/types";
 import { SearchIcon } from "lucide-react";
 
 export function SearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const source = useCatalogSource();
   const urlQuery = searchParams.get("q") ?? "";
   const [q, setQ] = useState(urlQuery);
   const [prevQuery, setPrevQuery] = useState(urlQuery);
@@ -33,7 +35,9 @@ export function SearchForm() {
     abortRef.current = controller;
     const timer = window.setTimeout(async () => {
       try {
-        const res = await fetch(`/api/tags/search?q=${encodeURIComponent(term)}`, {
+        const res = await fetch(
+          `/api/tags/search?q=${encodeURIComponent(term)}${source === "hitomi" ? "&source=hitomi" : ""}`,
+          {
           signal: controller.signal,
         });
         if (!res.ok) return;
@@ -47,7 +51,7 @@ export function SearchForm() {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [term]);
+  }, [source, term]);
 
   return (
     <form
@@ -56,7 +60,7 @@ export function SearchForm() {
       onSubmit={(event) => {
         event.preventDefault();
         setOpen(false);
-        router.push(searchHref({ q }));
+        router.push(searchHref({ q, source }));
       }}
     >
       <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -69,7 +73,11 @@ export function SearchForm() {
         }}
         onFocus={() => setOpen(true)}
         onBlur={() => window.setTimeout(() => setOpen(false), 120)}
-        placeholder="Search titles, tags, artist:name…"
+        placeholder={
+          source === "hitomi"
+            ? "Title, artist:name, female:tag…"
+            : "Search titles, tags, artist:name…"
+        }
         className="h-9 bg-card pl-8"
         autoComplete="off"
         aria-autocomplete="list"
@@ -89,7 +97,11 @@ export function SearchForm() {
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => {
                   setOpen(false);
-                  router.push(`/tag/${tag.type}/${tag.slug}`);
+                  router.push(
+                    source === "hitomi"
+                      ? searchHref({ q: `${tag.type}:${tag.slug}`, source })
+                      : `/tag/${tag.type}/${tag.slug}`,
+                  );
                 }}
               >
                 <span>

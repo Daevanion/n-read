@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CoverImage } from "@/components/cover-image";
 import { formatCount, formatPages } from "@/lib/format";
 import { mediaSrc } from "@/lib/media";
+import { galleryHref } from "@/lib/query";
 import type { GalleryListItem } from "@/lib/types";
 
 export function GalleryCard({
@@ -17,7 +18,7 @@ export function GalleryCard({
 
   return (
     <Link
-      href={`/g/${item.id}`}
+      href={galleryHref(item.source, item.id)}
       className="group flex flex-col gap-2 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
     >
       <div className="relative overflow-hidden rounded-lg bg-muted ring-1 ring-foreground/8">

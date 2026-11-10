@@ -5,8 +5,9 @@ import { GalleryGrid } from "@/components/gallery-grid";
 import { PaginationBar } from "@/components/pagination-bar";
 import { TagTogglePanel } from "@/components/tag-toggle";
 import { errorMessage } from "@/lib/errors";
+import { searchHitomi } from "@/lib/hitomi";
 import { searchGalleries } from "@/lib/nhentai";
-import { parsePage, parseQuery, parseSort, searchHref } from "@/lib/query";
+import { homeHref, parsePage, parseQuery, parseSort, parseSource, searchHref } from "@/lib/query";
 import type { PaginatedGalleries } from "@/lib/types";
 import type { Metadata } from "next";
 
@@ -24,12 +25,13 @@ export async function generateMetadata({
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; sort?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; sort?: string; page?: string; source?: string }>;
 }) {
   const params = await searchParams;
   const q = parseQuery(params.q);
   const sort = parseSort(params.sort);
   const page = parsePage(params.page);
+  const source = parseSource(params.source);
 
   const panel = (
     <Suspense fallback={<div className="h-40 rounded-2xl bg-card" />}>
@@ -43,13 +45,13 @@ export default async function SearchPage({
         <div>
           <h1 className="font-heading text-4xl italic">Search</h1>
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-            Turn tags on or off, or type a title. You can still use nhentai
-            syntax such as{" "}
-            <code className="rounded bg-muted px-1 py-0.5">pages:&gt;20</code>.
+            {source === "hitomi"
+              ? "Type a title, or a Hitomi tag such as artist:name or female:tag."
+              : "Turn tags on or off, or type a title. You can still use nhentai syntax such as pages:>20."}
           </p>
         </div>
-        {panel}
-        <FilterBar query="" sort={sort} />
+        {source === "nhentai" ? panel : null}
+        <FilterBar query="" sort={sort} source={source} />
       </main>
     );
   }
@@ -57,7 +59,10 @@ export default async function SearchPage({
   let error: string | null = null;
   let data: PaginatedGalleries = { result: [], num_pages: 1, total: 0 };
   try {
-    data = await searchGalleries(q, page, sort);
+    data =
+      source === "hitomi"
+        ? await searchHitomi(q, page, sort)
+        : await searchGalleries(q, page, sort);
   } catch (err) {
     error = errorMessage(err);
   }
@@ -73,15 +78,15 @@ export default async function SearchPage({
           </p>
         ) : null}
       </div>
-      {panel}
-      <FilterBar query={q} sort={sort} />
+      {source === "nhentai" ? panel : null}
+      <FilterBar query={q} sort={sort} source={source} />
       {error ? (
         <ErrorState title="Search failed" body={error} />
       ) : data.result.length === 0 ? (
         <EmptyState
           title="No galleries matched"
           body="Try a broader query, drop a minus tag, or switch the language chip."
-          actionHref="/"
+          actionHref={homeHref(source)}
           actionLabel="Browse newest"
         />
       ) : (
@@ -90,7 +95,7 @@ export default async function SearchPage({
           <PaginationBar
             page={page}
             numPages={data.num_pages}
-            hrefFor={(next) => searchHref({ q, sort, page: next })}
+            hrefFor={(next) => searchHref({ q, sort, page: next, source })}
           />
         </>
       )}

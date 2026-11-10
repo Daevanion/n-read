@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { LANGUAGE_FILTERS, SORT_OPTIONS, searchHref } from "@/lib/query";
+import { LANGUAGE_FILTERS, SORT_OPTIONS, homeHref, searchHref } from "@/lib/query";
 import { activeLanguage, withLanguage } from "@/lib/tag-query";
 import { cn } from "@/lib/utils";
-import type { SortOption } from "@/lib/types";
+import type { CatalogSource, SortOption } from "@/lib/types";
 
 function chipClass(active: boolean) {
   return cn(
@@ -19,15 +19,18 @@ export function FilterBar({
   sortBase,
   showLanguages = true,
   showSort = true,
+  source = "nhentai",
 }: {
   query: string;
   sort: SortOption;
   sortBase?: (sort: SortOption) => string;
   showLanguages?: boolean;
   showSort?: boolean;
+  source?: CatalogSource;
 }) {
   const hrefForSort =
-    sortBase ?? ((next: SortOption) => searchHref({ q: query, sort: next }));
+    sortBase ??
+    ((next: SortOption) => searchHref({ q: query, sort: next, source }));
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -40,7 +43,9 @@ export function FilterBar({
             const current = activeLanguage(query);
             const active = value === "" ? current === "" : current === value;
             const nextQuery = withLanguage(query, value || null);
-            const href = nextQuery ? searchHref({ q: nextQuery, sort }) : "/";
+            const href = nextQuery
+              ? searchHref({ q: nextQuery, sort, source })
+              : homeHref(source);
             return (
               <Link key={lang.label} href={href} className={chipClass(active)}>
                 {lang.label}

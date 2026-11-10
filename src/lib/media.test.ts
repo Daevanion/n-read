@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  hitomiPublicSrc,
   isAllowedCdnOrigin,
   mediaSrc,
   parseMediaPath,
@@ -33,6 +34,17 @@ test("builds a direct CDN URL and rejects unsafe paths", () => {
     /^https:\/\/i[1-4]\.nhentai\.net\/galleries\/4304843\/1\.webp$/,
   );
   assert.equal(mediaSrc("i", "../etc/passwd"), "");
+  assert.equal(
+    hitomiPublicSrc(
+      "https://w1.gold-usergeneratedcontent.net/1794/abc.webp",
+    ),
+    "/api/hitomi-image/w1.gold-usergeneratedcontent.net/1794/abc.webp",
+  );
+  assert.equal(hitomiPublicSrc("https://evil.example/abc.webp"), null);
+  assert.equal(
+    mediaSrc("i", "https://i2.nhentai.net/galleries/9/1.webp"),
+    "https://i2.nhentai.net/galleries/9/1.webp",
+  );
 });
 
 test("picks a stable CDN host from the media id", () => {

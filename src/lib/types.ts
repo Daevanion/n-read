@@ -30,8 +30,11 @@ export type Tag = {
   description?: string | null;
 };
 
+export type CatalogSource = "nhentai" | "hitomi";
+
 export type GalleryListItem = {
   id: number;
+  source?: CatalogSource;
   media_id: string;
   english_title: string;
   japanese_title: string | null;
@@ -46,6 +49,7 @@ export type GalleryListItem = {
 
 export type GalleryDetail = {
   id: number;
+  source?: CatalogSource;
   media_id: string;
   title: GalleryTitle;
   cover: CoverInfo;
@@ -80,6 +84,7 @@ export type SortOption =
 
 export type HistoryEntry = {
   id: number;
+  source?: CatalogSource;
   title: string;
   thumbnail: string;
   page: number;

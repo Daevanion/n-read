@@ -17,6 +17,7 @@ import {
   subscribeReaderMode,
 } from "@/lib/history";
 import { mediaSrc } from "@/lib/media";
+import { galleryHref } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import type { GalleryDetail, PageInfo } from "@/lib/types";
 import {
@@ -56,6 +57,7 @@ export function Reader({
       setPage(clamped);
       recordProgress({
         id: gallery.id,
+        source: gallery.source,
         title: gallery.title.pretty,
         thumbnail: gallery.thumbnail.path,
         page: clamped,
@@ -69,6 +71,7 @@ export function Reader({
   useEffect(() => {
     recordProgress({
       id: gallery.id,
+      source: gallery.source,
       title: gallery.title.pretty,
       thumbnail: gallery.thumbnail.path,
       page,
@@ -97,12 +100,12 @@ export function Reader({
       } else if (event.key === "m") {
         saveReaderMode(mode === "page" ? "strip" : "page");
       } else if (event.key === "Escape") {
-        router.push(`/g/${gallery.id}`);
+        router.push(galleryHref(gallery.source, gallery.id));
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [gallery.id, go, last, mode, page, router]);
+  }, [gallery.id, gallery.source, go, last, mode, page, router]);
 
   const current = pages[page - 1];
   const nextPage = pages[page];
@@ -133,7 +136,7 @@ export function Reader({
         onClick={(event) => event.stopPropagation()}
       >
         <Link
-          href={`/g/${gallery.id}`}
+          href={galleryHref(gallery.source, gallery.id)}
           className="inline-flex size-7 items-center justify-center rounded-lg text-paper hover:bg-white/10"
           aria-label="Close reader"
         >

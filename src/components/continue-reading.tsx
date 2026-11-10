@@ -9,6 +9,7 @@ import {
   subscribeHistory,
 } from "@/lib/history";
 import { mediaSrc } from "@/lib/media";
+import { readHref } from "@/lib/query";
 
 export function ContinueReading() {
   const entries = useSyncExternalStore(
@@ -28,8 +29,8 @@ export function ContinueReading() {
       <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:-mx-0 sm:px-0">
         {entries.map((entry) => (
           <Link
-            key={entry.id}
-            href={`/g/${entry.id}/read?p=${entry.page}`}
+            key={`${entry.source ?? "nhentai"}-${entry.id}`}
+            href={readHref(entry.source, entry.id, entry.page)}
             className="w-28 shrink-0 sm:w-32"
           >
             <CoverImage

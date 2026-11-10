@@ -56,9 +56,12 @@ export function emptyHistory(): HistoryEntry[] {
 }
 
 export function recordProgress(entry: HistoryEntry): HistoryEntry[] {
+  const source = entry.source ?? "nhentai";
   const next = [
-    entry,
-    ...loadHistory().filter((item) => item.id !== entry.id),
+    { ...entry, source },
+    ...loadHistory().filter(
+      (item) => item.id !== entry.id || (item.source ?? "nhentai") !== source,
+    ),
   ].slice(0, MAX_HISTORY);
   try {
     window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));

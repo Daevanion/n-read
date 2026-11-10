@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s · eronikki",
   },
   description:
-    "Read doujinshi and manga from the nhentai API. Search, browse tags, and open a full-page reader.",
+    "Read doujinshi and manga from nhentai and Hitomi. Search, browse tags, and open a full-page reader.",
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
@@ -48,14 +48,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           {children}
           <Chrome>
             <footer className="mt-auto border-t border-border/80 px-4 py-6 text-center text-xs text-muted-foreground">
-              Galleries and images come from the public{" "}
-              <a
-                href="https://nhentai.net/api/v2/docs"
-                className="underline underline-offset-2 hover:text-foreground"
-              >
-                nhentai API v2
-              </a>
-              . eronikki is unofficial. Adult works only.
+              Galleries come from the public nhentai API and Hitomi. eronikki is
+              unofficial. Adult works only.
             </footer>
           </Chrome>
         </AgeGate>

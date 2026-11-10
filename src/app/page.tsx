@@ -7,8 +7,9 @@ import { PaginationBar } from "@/components/pagination-bar";
 import { PopularRow } from "@/components/popular-row";
 import { TagTogglePanel } from "@/components/tag-toggle";
 import { errorMessage } from "@/lib/errors";
+import { listHitomi } from "@/lib/hitomi";
 import { getPopular, listGalleries } from "@/lib/nhentai";
-import { parsePage } from "@/lib/query";
+import { homeHref, parsePage, parseSource } from "@/lib/query";
 import type { GalleryListItem, PaginatedGalleries } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -16,10 +17,11 @@ export const dynamic = "force-dynamic";
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; random?: string }>;
+  searchParams: Promise<{ page?: string; random?: string; source?: string }>;
 }) {
   const params = await searchParams;
   const page = parsePage(params.page);
+  const source = parseSource(params.source);
   const randomFailed = params.random === "failed";
 
   let newestError: string | null = null;
@@ -28,13 +30,17 @@ export default async function HomePage({
   let popular: GalleryListItem[] = [];
 
   try {
-    newest = await listGalleries(page, 25);
+    newest =
+      source === "hitomi" ? await listHitomi(page, "date") : await listGalleries(page, 25);
   } catch (error) {
     newestError = errorMessage(error);
   }
 
   try {
-    popular = await getPopular();
+    popular =
+      source === "hitomi"
+        ? (await listHitomi(1, "popular-today", 8)).result
+        : await getPopular();
   } catch (error) {
     popularError = errorMessage(error);
   }
@@ -47,19 +53,34 @@ export default async function HomePage({
         </p>
         <h1 className="font-heading text-4xl italic sm:text-5xl">Newest spreads</h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          Browse live galleries from nhentai, search with tag syntax like{" "}
-          <code className="rounded bg-muted px-1 py-0.5 text-foreground">
-            language:english
-          </code>
-          , then read in a full-page viewer. Galleries tagged lolicon,
-          shotacon, kodomo, toddlercon, or the related tags are hidden.
+          {source === "hitomi" ? (
+            <>
+              Browse Hitomi with the same reader. Search with tags such as{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-foreground">
+                language:english
+              </code>{" "}
+              or <code className="rounded bg-muted px-1 py-0.5 text-foreground">artist:name</code>.
+            </>
+          ) : (
+            <>
+              Browse live galleries from nhentai, search with tag syntax like{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-foreground">
+                language:english
+              </code>
+              , then read in a full-page viewer.
+            </>
+          )}{" "}
+          Galleries tagged lolicon, shotacon, kodomo, toddlercon, or the related
+          tags are hidden.
         </p>
       </div>
 
-      <FilterBar query="" sort="date" showSort={false} />
-      <Suspense fallback={<div className="h-40 rounded-2xl bg-card" />}>
-        <TagTogglePanel />
-      </Suspense>
+      <FilterBar query="" sort="date" showSort={false} source={source} />
+      {source === "nhentai" ? (
+        <Suspense fallback={<div className="h-40 rounded-2xl bg-card" />}>
+          <TagTogglePanel />
+        </Suspense>
+      ) : null}
       {randomFailed ? (
         <p className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
           Random did not land on an available gallery. Try the button again.
@@ -94,7 +115,7 @@ export default async function HomePage({
             <PaginationBar
               page={page}
               numPages={newest.num_pages}
-              hrefFor={(next) => (next <= 1 ? "/" : `/?page=${next}`)}
+              hrefFor={(next) => homeHref(source, next)}
             />
           </>
         )}

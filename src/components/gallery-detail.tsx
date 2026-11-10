@@ -5,7 +5,7 @@ import { ReadButton } from "@/components/read-button";
 import { Badge } from "@/components/ui/badge";
 import { formatCount, formatPages, formatUploaded } from "@/lib/format";
 import { mediaSrc } from "@/lib/media";
-import { searchHref } from "@/lib/query";
+import { readHref, searchHref } from "@/lib/query";
 import { formatClause } from "@/lib/tag-query";
 import type { GalleryDetail as Gallery, Tag } from "@/lib/types";
 
@@ -52,7 +52,9 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
           className="mx-auto w-full max-w-[260px] rounded-xl ring-1 ring-foreground/10 md:mx-0"
         />
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">#{gallery.id}</p>
+          <p className="text-xs text-muted-foreground">
+            {gallery.source === "hitomi" ? "Hitomi" : "nhentai"} #{gallery.id}
+          </p>
           <h1 className="font-heading mt-1 text-3xl leading-tight italic sm:text-4xl">
             {gallery.title.pretty}
           </h1>
@@ -72,10 +74,12 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
               <dt className="text-xs text-muted-foreground">Pages</dt>
               <dd>{formatPages(gallery.num_pages)}</dd>
             </div>
-            <div>
-              <dt className="text-xs text-muted-foreground">Favorites</dt>
-              <dd>{formatCount(gallery.num_favorites)}</dd>
-            </div>
+            {gallery.source === "hitomi" ? null : (
+              <div>
+                <dt className="text-xs text-muted-foreground">Favorites</dt>
+                <dd>{formatCount(gallery.num_favorites)}</dd>
+              </div>
+            )}
             <div>
               <dt className="text-xs text-muted-foreground">Uploaded</dt>
               <dd>{formatUploaded(gallery.upload_date)}</dd>
@@ -83,7 +87,11 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
           </dl>
 
           <div className="mt-6">
-            <ReadButton id={gallery.id} pages={gallery.num_pages} />
+            <ReadButton
+              id={gallery.id}
+              pages={gallery.num_pages}
+              source={gallery.source}
+            />
           </div>
 
           <div className="mt-8 space-y-4">
@@ -95,24 +103,30 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
                 <div className="flex flex-wrap gap-1.5">
                   {group.tags.map((tag) => (
                     <Badge
-                      key={tag.id}
+                      key={`${tag.type}-${tag.slug}`}
                       variant="outline"
                       render={
                         <Link
                           href={searchHref({
-                            q: formatClause({
-                              type: tag.type,
-                              value: tag.slug,
-                              mode: "include",
-                            }),
+                            q:
+                              gallery.source === "hitomi"
+                                ? `${tag.type}:${tag.slug}`
+                                : formatClause({
+                                    type: tag.type,
+                                    value: tag.slug,
+                                    mode: "include",
+                                  }),
+                            source: gallery.source,
                           })}
                         />
                       }
                     >
                       {tag.name}
-                      <span className="text-muted-foreground">
-                        {formatCount(tag.count)}
-                      </span>
+                      {tag.count > 0 ? (
+                        <span className="text-muted-foreground">
+                          {formatCount(tag.count)}
+                        </span>
+                      ) : null}
                     </Badge>
                   ))}
                 </div>
@@ -129,7 +143,7 @@ export function GalleryDetailView({ gallery }: { gallery: Gallery }) {
             {gallery.pages.map((page) => (
               <Link
                 key={page.number}
-                href={`/g/${gallery.id}/read?p=${page.number}`}
+                href={readHref(gallery.source, gallery.id, page.number)}
                 className="overflow-hidden rounded-md ring-1 ring-foreground/8 hover:ring-primary"
               >
                 <CoverImage

@@ -1,4 +1,4 @@
-import type { SortOption } from "@/lib/types";
+import type { CatalogSource, SortOption } from "@/lib/types";
 
 export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "date", label: "Newest" },
@@ -50,16 +50,45 @@ export function parseGalleryId(value: string | undefined): number | null {
   return id;
 }
 
+export function parseSource(
+  value: string | string[] | undefined,
+): CatalogSource {
+  return firstParam(value) === "hitomi" ? "hitomi" : "nhentai";
+}
+
+export function homeHref(source: CatalogSource = "nhentai", page = 1): string {
+  const params = new URLSearchParams();
+  if (source === "hitomi") params.set("source", "hitomi");
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `/?${qs}` : "/";
+}
+
+export function galleryHref(source: CatalogSource | undefined, id: number): string {
+  return source === "hitomi" ? `/h/${id}` : `/g/${id}`;
+}
+
+export function readHref(
+  source: CatalogSource | undefined,
+  id: number,
+  page = 1,
+): string {
+  const base = source === "hitomi" ? `/h/${id}/read` : `/g/${id}/read`;
+  return `${base}?p=${page}`;
+}
+
 export function searchHref(input: {
   q?: string;
   sort?: string;
   page?: number;
+  source?: CatalogSource;
 }): string {
   const params = new URLSearchParams();
   const q = (input.q ?? "").trim();
   if (q) params.set("q", q);
   if (input.sort && input.sort !== "date") params.set("sort", input.sort);
   if (input.page && input.page > 1) params.set("page", String(input.page));
+  if (input.source === "hitomi") params.set("source", "hitomi");
   const qs = params.toString();
   return qs ? `/search?${qs}` : "/search";
 }

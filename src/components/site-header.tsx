@@ -2,9 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { LogoMark } from "@/components/logo-mark";
 import { SearchForm } from "@/components/search-form";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ShuffleIcon, TagsIcon } from "lucide-react";
+import { HeaderActions, SourceSwitch } from "@/components/source-switch";
 
 export function SiteHeader() {
   return (
@@ -25,21 +23,13 @@ export function SiteHeader() {
             <SearchForm />
           </Suspense>
         </div>
-        <Link
-          href="/search"
-          className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-        >
-          <TagsIcon data-icon="inline-start" />
-          <span className="hidden sm:inline">Tags</span>
-        </Link>
-        <Link
-          href="/random"
-          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-        >
-          <ShuffleIcon data-icon="inline-start" />
-          <span className="hidden sm:inline">Random</span>
-        </Link>
+        <Suspense fallback={<div className="h-8 w-24" />}>
+          <HeaderActions />
+        </Suspense>
       </div>
+      <Suspense fallback={null}>
+        <SourceSwitch />
+      </Suspense>
     </header>
   );
 }

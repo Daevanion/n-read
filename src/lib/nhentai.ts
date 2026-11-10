@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import { cache } from "react";
+import { catalogGet } from "@/lib/catalog-cache";
 import { NhentaiError } from "@/lib/errors";
 import {
   galleryIsBlocked,
@@ -77,7 +79,8 @@ async function loadFromNhentai<T>(
     await new Promise((resolve) => setTimeout(resolve, wait));
   }
 
-  const { revalidate = 60, ...rest } = init;
+  const rest: RequestInit = { ...init };
+  delete (rest as { revalidate?: number }).revalidate;
   const url = `${API_BASE}${path}`;
   let response: Response;
   try {
@@ -85,7 +88,7 @@ async function loadFromNhentai<T>(
       ...rest,
       headers: { ...headers(), ...rest.headers },
       signal: rest.signal ?? AbortSignal.timeout(15_000),
-      next: { revalidate },
+      cache: "no-store",
     });
   } catch {
     throw new NhentaiError(
@@ -134,6 +137,18 @@ export const getCdnConfig = cache(async function getCdnConfig(): Promise<CdnConf
   return DEFAULT_CDN;
 });
 
+const MINUTE = 60_000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+function digest(value: string): string {
+  return createHash("sha256").update(value).digest("hex").slice(0, 20);
+}
+
+function asNhentai(items: GalleryListItem[]): GalleryListItem[] {
+  return rejectBlockedItems(items).map((item) => ({ ...item, source: "nhentai" }));
+}
+
 export async function listGalleries(
   page = 1,
   perPage = 25,
@@ -142,10 +157,13 @@ export async function listGalleries(
     page: String(page),
     per_page: String(perPage),
   });
-  const data = await nhentaiFetch<PaginatedGalleries>(`/galleries?${params}`, {
-    revalidate: 60,
-  });
-  return { ...data, result: rejectBlockedItems(data.result ?? []) };
+  const data = await catalogGet(
+    `nhentai/list/${page}/${perPage}`,
+    MINUTE,
+    30 * MINUTE,
+    () => nhentaiFetch<PaginatedGalleries>(`/galleries?${params}`),
+  );
+  return { ...data, result: asNhentai(data.result ?? []) };
 }
 
 export async function searchGalleries(
@@ -158,10 +176,13 @@ export async function searchGalleries(
     page: String(page),
     sort,
   });
-  const data = await nhentaiFetch<PaginatedGalleries>(`/search?${params}`, {
-    revalidate: 30,
-  });
-  return { ...data, result: rejectBlockedItems(data.result ?? []) };
+  const data = await catalogGet(
+    `nhentai/search/${digest(`${query}\n${page}\n${sort}`)}`,
+    2 * MINUTE,
+    30 * MINUTE,
+    () => nhentaiFetch<PaginatedGalleries>(`/search?${params}`),
+  );
+  return { ...data, result: asNhentai(data.result ?? []) };
 }
 
 export async function listTagged(
@@ -176,18 +197,20 @@ export async function listTagged(
     sort,
     per_page: String(perPage),
   });
-  const data = await nhentaiFetch<PaginatedGalleries>(
-    `/galleries/tagged?${params}`,
-    { revalidate: 60 },
+  const data = await catalogGet(
+    `nhentai/tagged/${tagId}/${page}/${sort}/${perPage}`,
+    MINUTE,
+    30 * MINUTE,
+    () => nhentaiFetch<PaginatedGalleries>(`/galleries/tagged?${params}`),
   );
-  return { ...data, result: rejectBlockedItems(data.result ?? []) };
+  return { ...data, result: asNhentai(data.result ?? []) };
 }
 
 export async function getPopular(): Promise<GalleryListItem[]> {
-  const data = await nhentaiFetch<GalleryListItem[]>("/galleries/popular", {
-    revalidate: 120,
-  });
-  return rejectBlockedItems(Array.isArray(data) ? data : []);
+  const data = await catalogGet("nhentai/popular", 10 * MINUTE, 6 * HOUR, () =>
+    nhentaiFetch<GalleryListItem[]>("/galleries/popular"),
+  );
+  return asNhentai(Array.isArray(data) ? data : []);
 }
 
 export async function getRandomId(): Promise<number> {
@@ -201,16 +224,16 @@ export async function getRandomId(): Promise<number> {
 export const getGallery = cache(async function getGallery(
   id: number,
 ): Promise<GalleryDetail> {
-  const data = await nhentaiFetch<GalleryDetail>(
-    `/galleries/${id}?include=related`,
-    { revalidate: 300 },
+  const data = await catalogGet(`nhentai/gallery/${id}`, 6 * HOUR, 7 * DAY, () =>
+    nhentaiFetch<GalleryDetail>(`/galleries/${id}?include=related`),
   );
   if (galleryIsBlocked(data)) {
     throw new NhentaiError("This gallery is not available in eronikki.", 404);
   }
   return {
     ...data,
-    related: data.related ? rejectBlockedItems(data.related) : data.related,
+    source: "nhentai",
+    related: data.related ? asNhentai(data.related) : data.related,
   };
 });
 
@@ -218,9 +241,10 @@ export const getTagBySlug = cache(async function getTagBySlug(
   type: string,
   slug: string,
 ): Promise<Tag> {
-  return nhentaiFetch<Tag>(
-    `/tags/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
-    { revalidate: 3600 },
+  return catalogGet(`nhentai/tag/${type}/${slug}`, 12 * HOUR, 7 * DAY, () =>
+    nhentaiFetch<Tag>(
+      `/tags/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
+    ),
   );
 });
 
@@ -234,9 +258,14 @@ export async function listTagsByType(
     page: String(page),
     per_page: String(perPage),
   });
-  const data = await nhentaiFetch<{ result?: Tag[] }>(
-    `/tags/${encodeURIComponent(type)}?${params}`,
-    { revalidate: 3600 },
+  const data = await catalogGet(
+    `nhentai/tags/${type}/${page}/${perPage}`,
+    12 * HOUR,
+    7 * DAY,
+    () =>
+      nhentaiFetch<{ result?: Tag[] }>(
+        `/tags/${encodeURIComponent(type)}?${params}`,
+      ),
   );
   return (data.result ?? []).filter((tag) => !tagLooksBlocked(tag)).slice(0, perPage);
 }
@@ -244,12 +273,17 @@ export async function listTagsByType(
 export async function searchTags(query: string, limit = 8): Promise<Tag[]> {
   const q = query.trim();
   if (q.length < 2) return [];
-  const data = await nhentaiFetch<Tag[]>("/tags/search", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: q.slice(0, 80), limit: Math.min(limit + 8, 50) }),
-    revalidate: 0,
+  const body = JSON.stringify({
+    query: q.slice(0, 80),
+    limit: Math.min(limit + 8, 50),
   });
+  const data = await catalogGet(`nhentai/tagsearch/${digest(body)}`, 10 * MINUTE, 6 * HOUR, () =>
+    nhentaiFetch<Tag[]>("/tags/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    }),
+  );
   if (!Array.isArray(data)) return [];
   return data.filter((tag) => !tagLooksBlocked(tag)).slice(0, limit);
 }
