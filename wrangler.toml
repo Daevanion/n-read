@@ -1,3 +1,4 @@
 name = "eronikki-images"
 main = "workers/hitomi-image.js"
 compatibility_date = "2026-11-01"
+account_id = "997a1e3dd03c3c9211c5d3b21122f0ed"

@@ -5,7 +5,7 @@ import { authorizationHeader, encodeObjectKey, sha256Hex } from "@/lib/s3";
 const KEY_RE = /^[a-z0-9][a-z0-9/_.-]{0,180}$/;
 
 export type ObjectStore = {
-  kind: "s3" | "disk";
+  kind: "s3" | "disk" | "r2";
   read(key: string): Promise<string | null>;
   write(key: string, body: string): Promise<void>;
 };
@@ -139,10 +139,57 @@ export function createS3Store(config: S3Config): ObjectStore {
   };
 }
 
+export function httpConfigFromEnv(env: NodeJS.ProcessEnv = process.env): {
+  url: string;
+  token: string;
+} | null {
+  const url = env.CACHE_HTTP_URL?.trim();
+  const token = env.CACHE_HTTP_TOKEN?.trim();
+  if (!url || !token) return null;
+  return { url: url.replace(/\/+$/, ""), token };
+}
+
+export function createHttpStore(baseUrl: string, token: string): ObjectStore {
+  const base = baseUrl.replace(/\/+$/, "");
+
+  async function call(method: "GET" | "PUT", key: string, body?: string) {
+    const safe = assertCacheKey(key);
+    const path = safe.split("/").map(encodeURIComponent).join("/");
+    return fetch(`${base}/${path}`, {
+      method,
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...(method === "PUT" ? { "content-type": "application/json" } : {}),
+      },
+      body,
+      cache: "no-store",
+    });
+  }
+
+  return {
+    kind: "r2",
+    async read(key) {
+      const response = await call("GET", key);
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error(`Object storage returned ${response.status}.`);
+      return response.text();
+    },
+    async write(key, body) {
+      const response = await call("PUT", key, body);
+      if (!response.ok) throw new Error(`Object storage returned ${response.status}.`);
+    },
+  };
+}
+
 let singleton: ObjectStore | null = null;
 
 export function objectStore(): ObjectStore {
   if (singleton) return singleton;
+  const http = httpConfigFromEnv();
+  if (http) {
+    singleton = createHttpStore(http.url, http.token);
+    return singleton;
+  }
   const config = s3ConfigFromEnv();
   singleton = config
     ? createS3Store(config)
@@ -152,6 +199,7 @@ export function objectStore(): ObjectStore {
   return singleton;
 }
 
-export function cacheBackend(): "s3" | "disk" {
+export function cacheBackend(): "r2" | "s3" | "disk" {
+  if (httpConfigFromEnv()) return "r2";
   return s3ConfigFromEnv() ? "s3" : "disk";
 }

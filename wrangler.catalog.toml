@@ -1,0 +1,8 @@
+name = "eronikki-catalog"
+main = "workers/catalog-cache.js"
+compatibility_date = "2026-11-01"
+account_id = "997a1e3dd03c3c9211c5d3b21122f0ed"
+
+[[r2_buckets]]
+binding = "CATALOG"
+bucket_name = "eronikki"

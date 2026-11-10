@@ -31,7 +31,7 @@ Every catalog response is stored as a small JSON object and reused:
 
 A fresh hit never calls nhentai or Hitomi. A stale hit returns the saved copy and refreshes one request in the background. Identical requests that arrive together share one upstream call, and nhentai calls are still paced per endpoint. Random is not cached. Image bytes are not stored.
 
-Set these when the cache should live off the app server. Any S3-compatible API works. [Cloudflare R2](https://developers.cloudflare.com/r2/) is the one that fits this budget: the free allowance covers the catalog (10 GB, 1 million writes, 10 million reads a month) and R2 does not charge for bandwidth.
+The live catalog sits in a Cloudflare R2 bucket named `eronikki`. The app reaches it through `CACHE_HTTP_URL`, a small worker that only accepts one bearer token. Any S3-compatible API still works through the `CACHE_S3_*` variables. R2’s free allowance covers the catalog (10 GB, 1 million writes, 10 million reads a month) and R2 does not charge for bandwidth.
 
 ```bash
 CACHE_S3_ENDPOINT=https://ACCOUNT_ID.r2.cloudflarestorage.com
