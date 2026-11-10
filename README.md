@@ -21,9 +21,11 @@ Anonymous calls share a per-IP rate limit. If you have an nhentai API key, set `
 
 ## Host it
 
+The site is live at [eronikki.onrender.com](https://eronikki.onrender.com). The deploy source is [github.com/Daevanion/n-read](https://github.com/Daevanion/n-read).
+
 Vercel does not allow this kind of site. Fly.io’s terms ban pornographic content on their machines, and Railway bans sexually explicit content. [Render](https://render.com) does allow legal adult sites that stay inside its acceptable-use rules, and it can run this Next.js server.
 
-Push this repo to GitHub or GitLab, then in the Render dashboard choose **New** → **Blueprint** and point it at the repo. `render.yaml` builds the app, starts it on Render’s `PORT`, and checks `/api/health`. The free instance sleeps after a quiet stretch; the next visit wakes it. A larger plan in that file (`0.5c-512mb`) keeps it awake.
+`render.yaml` builds the app, starts it on Render’s `PORT`, and checks `/api/health`. The free instance sleeps after a quiet stretch; the next visit wakes it. A larger plan in that file (`0.5c-512mb`) keeps it awake.
 
 `NHENTAI_API_KEY` is optional. Add it in the Render service’s environment only if you have a key. The public API works without it.
 
